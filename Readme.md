@@ -12,6 +12,8 @@
 
 ### Required
 - `APP_ID`: your app ID (or personal token)
+- `USER`: Username for authentication
+- `PASS`: Password for authentication
 
 ### Optional
 - `API_KEY`: your API key (blank if using a personal token)
