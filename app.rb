@@ -4,6 +4,10 @@ require 'pony'
 
 DEBUG = ENV["DEBUG"] || nil
 
+use Rack::Auth::Basic, "Restricted Area" do |username, password|
+  username == ENV["USER"] and password == ENV["PASS"]
+end
+
 get '/' do
   erb :index
 end

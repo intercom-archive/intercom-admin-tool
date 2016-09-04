@@ -4,6 +4,14 @@
   "repository": "https://github.com/thewheat/intercom-admin-tools",
   "keywords": ["intercom", "admin", "tool", "chat", "transcript"],
   "env": {
+    "USER": {
+      "required": true,
+      "description": "Username for authentication"
+    },
+    "PASS": {
+      "required": true,
+      "description": "Password for authentication"
+    },
     "APP_ID": {
       "required": true,
       "description": "your app ID (or personal token)"
