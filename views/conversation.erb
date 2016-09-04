@@ -1,0 +1,30 @@
+<h3>Conversation</h3>
+<!--
+<% if @email then%>
+	<h4>Emailed to <%= @email %> with subject "<%=@subject %>"
+<% else %>
+	<form method="POST">
+	  <label>Email transcript: <input name="email" /></label><br>
+	  <label>Subject: <input name="subject" /></label><br>
+	  <input type="submit">
+	</form>
+<% end %>
+-->
+<h5>From <%= author_name(@conversation.conversation_message.author, @authors_details) %> at <%= @conversation.created_at %></h5>
+<h5><%= @conversation.conversation_message.subject %></h5>
+<h5><%= @conversation.conversation_message.body %></h5>
+
+
+<% @conversation.conversation_parts.each {|p| %>
+<% if @show_selective != "1" || @show_selective == "1" && p.part_type == "comment" then %>
+<div class='message <%= p.part_type %>'>
+	<h5><%= p.part_type %> by <%= author_name(p.author, @authors_details) %> at <%= p.created_at %>. 
+	<% if p.assigned_to and !p.assigned_to.nil? then %>
+		Assigned to: <%= author_name(p.assigned_to, @authors_details) %>
+	<% end %>
+	</h5>
+	<p><%= p.body %></p>
+</div>
+<% end %>
+<% } %>
+

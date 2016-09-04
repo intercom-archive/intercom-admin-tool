@@ -1,0 +1,16 @@
+{
+  "name": "Intercom - Admin tools",
+  "description": "Administrator tools for Intercom",
+  "repository": "https://github.com/thewheat/intercom-admin-tools",
+  "keywords": ["intercom", "admin", "tool", "chat", "transcript"],
+  "env": {
+    "APP_ID": {
+      "required": true,
+      "description": "your app ID (or personal token)"
+    },
+    "API_KEY": {
+      "required": false,
+      "description": "your API key (blank if using a personal token)"
+    }
+  }
+}
