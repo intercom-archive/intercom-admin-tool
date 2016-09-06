@@ -1,30 +1,63 @@
-<h3>Conversation</h3>
-<!--
-<% if @email then%>
-	<h4>Emailed to <%= @email %> with subject "<%=@subject %>"
-<% else %>
-	<form method="POST">
-	  <label>Email transcript: <input name="email" /></label><br>
-	  <label>Subject: <input name="subject" /></label><br>
-	  <input type="submit">
-	</form>
+<div style="max-width: 800px; margin: 0 auto">
+<h3>Conversation Transcript</h3>
+<% if show_email then%>
+	<% if @show_sent then %>
+		<h4>Emailed to <%= @email %> with subject "<%=@subject %>"</h4>
+	<% else %>
+		<form method="POST">
+		  <label>Subject: <input style="width:20em;" name="subject" placeholder="subject" value="Conversation Transcript"/></label><br>
+		  <label>Send to: <input style="width:20em;" name="email" placeholder="email" /></label><br>
+		  <input type="submit" value="Send Transcript">
+		</form>
+	<% end %>
 <% end %>
--->
-<h5>From <%= author_name(@conversation.conversation_message.author, @authors_details) %> at <%= @conversation.created_at %></h5>
-<h5><%= @conversation.conversation_message.subject %></h5>
-<h5><%= @conversation.conversation_message.body %></h5>
 
+<% if @conversation then %>
+
+<%
+style = "border: 1px solid #aaaaaa; padding: 10px; margin-bottom: 0.5em;"
+style_no_margin = "style='margin-top: 0'"
+%>
+<div class='message' style='<%= style %>
+	<% if author_is_admin(@conversation.conversation_message.author) then %>
+		text-align: right;
+		<% if p.part_type == "note" then %>
+		background-color: #FFF7EF;
+		<% else %>
+		background-color: #EDF9FF;
+		<% end %>
+	<% end %>
+	'>
+	<h4 <%= style_no_margin %>>From <%= author_name(@conversation.conversation_message.author, @authors_details) %> at <%= @conversation.created_at %></h4>
+	<% if @conversation.conversation_message.subject then %>
+		<h3 <%= style_no_margin %>><%= @conversation.conversation_message.subject %></h3>
+	<% end %>
+	<% if @conversation.conversation_message.body then %>
+		<h4 <%= style_no_margin %>><%= @conversation.conversation_message.body %></h4>
+	<% end %>
+</div>
 
 <% @conversation.conversation_parts.each {|p| %>
 <% if @show_selective != "1" || @show_selective == "1" && p.part_type == "comment" then %>
-<div class='message <%= p.part_type %>'>
-	<h5><%= p.part_type %> by <%= author_name(p.author, @authors_details) %> at <%= p.created_at %>. 
-	<% if p.assigned_to and !p.assigned_to.nil? then %>
-		Assigned to: <%= author_name(p.assigned_to, @authors_details) %>
+<div class='message <%= p.part_type %>'
+	style='<%= style %>
+		<% if author_is_admin(p.author) then %>
+			text-align: right;
+			<% if p.part_type == "note" then %>
+			background-color: #FFF7EF;
+			<% else %>
+			background-color: #EDF9FF;
+			<% end %>
+		<% end %>
+		'>
+	<h4 <%= style_no_margin %>><%= p.part_type.capitalize %> by <%= author_name(p.author, @authors_details) %> at <%= p.created_at %> 
+	<% if p.assigned_to and !p.assigned_to.nil? and @show_selective != "1" then %>
+		<br>Assigned to: <%= author_name(p.assigned_to, @authors_details) %>
 	<% end %>
-	</h5>
+	</h4>
 	<p><%= p.body %></p>
 </div>
 <% end %>
 <% } %>
-
+<% end %>
+</div>

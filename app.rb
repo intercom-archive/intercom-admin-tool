@@ -1,11 +1,13 @@
 require 'sinatra'
 require 'intercom'
-require 'pony'
+require 'dotenv'
+require 'simple_spark'
+Dotenv.load
 
 DEBUG = ENV["DEBUG"] || nil
 
 use Rack::Auth::Basic, "Restricted Area" do |username, password|
-  username == ENV["USER"] and password == ENV["PASS"]
+  username == ENV["USERNAME"] and password == ENV["PASSWORD"]
 end
 
 get '/' do
@@ -14,19 +16,32 @@ end
 
 get '/conversation' do
   get_conversation_details
-  erb :conversation
+  erb :conversation, :locals => {:show_email => can_show_email}
 end
 
 post '/conversation' do
   get_conversation_details
   @email = params[:email]
   @subject = params[:subject]
+  simple_spark = SimpleSpark::Client.new
+  from_address = "sender@" + ENV["SPARKPOST_SANDBOX_DOMAIN"]
 
-  Pony.mail :to => @email, :subject => "Chat Transcript", :body => erb(:conversation), :via => :sendmail
-
-  erb :conversation
+  properties = {
+    recipients:  [{ address: { email: @email }}],
+    content:
+    { from: { email: from_address },
+      subject: @subject,
+      html: erb((:conversation),:locals => {:show_email => false})
+    }
+  }
+  simple_spark.transmissions.create(properties)
+  @show_sent = true
+  erb :conversation, :locals => {:show_email => false}
 end
 
+def can_show_email
+  (ENV["FROM_ADDRESS"] || ENV["SPARKPOST_SANDBOX_DOMAIN"]) && ENV["SPARKPOST_API_KEY"]
+end
 def get_author_type author
   type = "admin"
   if author.class.to_s == "Intercom::Lead" then
@@ -108,6 +123,12 @@ def conversation (conversation_id)
 end
 
 helpers do
+  def author_is_admin (author)
+    "admin" == get_author_type(author)
+  end
+  def author_is_admin (author)
+    "admin" == get_author_type(author)
+  end
   def author_name (author, author_list)
     type = get_author_type(author)
     id = author.id

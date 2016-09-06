@@ -4,11 +4,11 @@
   "repository": "https://github.com/thewheat/intercom-admin-tools",
   "keywords": ["intercom", "admin", "tool", "chat", "transcript"],
   "env": {
-    "USER": {
+    "USERNAME": {
       "required": true,
       "description": "Username for authentication"
     },
-    "PASS": {
+    "PASSWORD": {
       "required": true,
       "description": "Password for authentication"
     },
@@ -20,5 +20,8 @@
       "required": false,
       "description": "your API key (blank if using a personal token)"
     }
-  }
+  },
+  "addons": [
+    "sparkpost"
+  ]
 }
