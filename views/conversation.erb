@@ -3,14 +3,22 @@
 <% if show_email then%>
 	<% if @show_sent then %>
 		<h4>Emailed to <%= @email %> with subject "<%=@subject %>"</h4>
-	<% else %>
-		<form method="POST">
-		  <label>Subject: <input style="width:20em;" name="subject" placeholder="subject" value="Conversation Transcript"/></label><br>
-		  <label>Send to: <input style="width:20em;" name="email" placeholder="email" /></label><br>
-		  <input type="submit" value="Send Transcript">
-		</form>
 	<% end %>
+	<form method="POST">
+	  <label>Subject: <input style="width:20em;" name="subject" placeholder="subject" value="Conversation Transcript"/></label><br>
+	  <label>Send to: <input style="width:20em;" name="email" placeholder="email" /></label><br>
+	  <input type="submit" value="Send Transcript">
+	</form>
 <% end %>
+
+<% unless @hide_get_transcript_form then %>
+	<form action="conversation" method="GET">
+	  <label>Conversation ID: <input text="" name="id" value="<%if @conversation %><%=@conversation.id%><%end%>"/></label><br>
+	  <label>Show only public responses: <input type="checkbox" name="show_selective" value="1" /></label><br>
+	  <input type="submit" value="Get Transcript">
+	</form>
+<% end %>
+
 
 <% if @conversation then %>
 
@@ -21,11 +29,7 @@ style_no_margin = "style='margin-top: 0'"
 <div class='message' style='<%= style %>
 	<% if author_is_admin(@conversation.conversation_message.author) then %>
 		text-align: right;
-		<% if p.part_type == "note" then %>
-		background-color: #FFF7EF;
-		<% else %>
 		background-color: #EDF9FF;
-		<% end %>
 	<% end %>
 	'>
 	<h4 <%= style_no_margin %>>From <%= author_name(@conversation.conversation_message.author, @authors_details) %> at <%= @conversation.created_at %></h4>

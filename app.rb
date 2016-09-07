@@ -26,6 +26,7 @@ post '/conversation' do
   simple_spark = SimpleSpark::Client.new
   from_address = "sender@" + ENV["SPARKPOST_SANDBOX_DOMAIN"]
 
+  @hide_get_transcript_form = true
   properties = {
     recipients:  [{ address: { email: @email }}],
     content:
@@ -36,7 +37,8 @@ post '/conversation' do
   }
   simple_spark.transmissions.create(properties)
   @show_sent = true
-  erb :conversation, :locals => {:show_email => false}
+  @hide_get_transcript_form = false
+  erb :conversation, :locals => {:show_email => can_show_email}
 end
 
 def can_show_email
@@ -66,26 +68,33 @@ def get_conversation_details
   if @show_selective == "true" then
     @show_selective = "1"
   end
-  @conversation = conversation(id)
-  @authors = {"user" => {}, "lead" => {}, "admin" => {}}
-  @conversation.conversation_parts.each{|p| 
-    tmp = author_details p.author
-    @authors[tmp[:type]][tmp[:id]] = tmp
-    if p.assigned_to then
-      @authors["admin"][p.assigned_to.id] = 1
+  if id.nil? then
+    @conversation = nil
+  else
+    @conversation = conversation(id)
+    @authors = {"user" => {}, "lead" => {}, "admin" => {}}
+    unless @conversation.nil?
+      if @conversation.conversation_parts then
+        @conversation.conversation_parts.each{|p|
+          tmp = author_details p.author
+          @authors[tmp[:type]][tmp[:id]] = tmp
+          if p.assigned_to then
+            @authors["admin"][p.assigned_to.id] = 1
+          end
+        }
+      end
+      tmp = author_details @conversation.conversation_message.author
+      @authors[tmp[:type]][tmp[:id]] = 1
     end
-  }
-  tmp = author_details @conversation.conversation_message.author
-  @authors[tmp[:type]][tmp[:id]] = 1
-
-  @authors_details = get_all_author_details
+    @authors_details = get_all_author_details
+  end
 end
 
 def get_all_author_details
   init_intercom
   authors_details = {"user" => {}, "lead" => {}, "admin" => {}}
   @authors["lead"].each{|id, obj|
-    data = @intercom.leads.find(:id => id)
+    data = @intercom.contacts.find(:id => id)
     authors_details["lead"][id] = data.name || data.pseudonym || data.email || data.id
   }
   @authors["user"].each{|id, obj|
@@ -115,7 +124,7 @@ end
 def conversation (conversation_id)
   init_intercom
   begin
-    @intercom.conversations.find(:id => 5841966066)
+    @intercom.conversations.find(:id => conversation_id)
 
   rescue Exception => e 
     nil
