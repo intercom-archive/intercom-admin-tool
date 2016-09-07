@@ -5,7 +5,11 @@
 - An admin tool that adds extra functionality to Intercom
 
 ## Current Features
-- Export retrieve Conversation Transcript
+- Retrieve conversation transcript
+  - able to show only public replies (i.e. hides notes, assignments, open, close)
+  - able to email transcript to an email address using Heroku's Sparkpost addon (using the Deploy button would handle this automatically)
+
+![](/docs/conversation_transcript.png)
 
 ## Configuration - Environment Variables
 - Environment variables are needed for this webhook to work
