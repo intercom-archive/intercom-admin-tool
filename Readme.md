@@ -2,7 +2,7 @@
 
 
 # Intercom Admin Tool
-- An admin tool that adds extra functionality to Intercom
+- A proof of concept admin tool that adds extra functionality to Intercom
 
 ## Current Features
 - Retrieve conversation transcript
@@ -15,7 +15,7 @@
 - Environment variables are needed for this webhook to work
 
 ### Required
-- `APP_ID`: your app ID (or personal token)
+- `APP_ID`: your app ID (or personal access token - you will need an extended token for this)
 - `USERNAME`: Username for authentication
 - `PASSWORD`: Password for authentication
 
